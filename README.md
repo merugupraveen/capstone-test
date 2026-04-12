@@ -108,5 +108,5 @@ npm run test:api:regression
 
 ## Sample tests included
 
-- UI: validates heading on `https://example.com`
+- UI: validates heading on `http://localhost:8080/`
 - API: validates `GET /posts/1` on `https://jsonplaceholder.typicode.com`
