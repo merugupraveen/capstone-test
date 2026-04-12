@@ -105,16 +105,34 @@ Given("a quote is displayed", async function (this: CustomWorld) {
 });
 
 Given("a quote exists in History", async function (this: CustomWorld) {
-  // Make sure at least one quote was shown
-  await this.runStep?.("Given a quote is displayed");
+  if (!this.page) throw new Error("Playwright page was not initialized for UI scenario.");
+
+  // Ensure app is open
+  await this.page.goto(env.uiBaseUrl, { waitUntil: "domcontentloaded" });
+
+  // Show at least one quote so History is populated
+  await clickBySelector(this, selectors.showQuoteButton);
+  await expect(this.page.locator(selectors.quoteArea)).toBeVisible();
+
+  // Open History and ensure at least one item exists
+  await clickBySelector(this, selectors.historyButton);
+  await expect(this.page.locator(selectors.historyListItems).first()).toBeVisible();
 });
 
 Given("a quote is in my Favorites list", async function (this: CustomWorld) {
-  // Naive flow: display quote, favorite it, and open favorites.
-  await this.runStep?.("Given a quote is displayed");
+  if (!this.page) throw new Error("Playwright page was not initialized for UI scenario.");
+
+  // Ensure app is open
+  await this.page.goto(env.uiBaseUrl, { waitUntil: "domcontentloaded" });
+
+  // Display a quote then favorite it
+  await clickBySelector(this, selectors.showQuoteButton);
+  await expect(this.page.locator(selectors.quoteArea)).toBeVisible();
   await clickBySelector(this, selectors.favoriteButton);
+
+  // Open favorites and verify at least one favorite item is present
   await clickBySelector(this, selectors.favoritesButton);
-  await expect(this.page!.locator(selectors.favoritesListItems).first()).toBeVisible();
+  await expect(this.page.locator(selectors.favoritesListItems).first()).toBeVisible();
 });
 
 Given("categories are available", async function (this: CustomWorld) {
