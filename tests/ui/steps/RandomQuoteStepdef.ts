@@ -67,15 +67,19 @@ Given("a quote is currently displayed", async function (this: CustomWorld) {
     await expect(quoteArea).not.toHaveText(/^\s*$/);
   }
 
-  this.attach("previousQuote", (await quoteArea.innerText()).trim());
+  (this as any).previousQuote = (await quoteArea.innerText()).trim();
 });
 
 Then("the displayed quote should update to a new random quote", async function (this: CustomWorld) {
   if (!this.page) throw new Error("Playwright page was not initialized for UI scenario.");
 
   const quoteArea = this.page.locator('[data-testid="quote-area"]');
-  const prev = (this as any).previousQuote ?? "";
+
+  const prev = ((this as any).previousQuote ?? "").trim();
   const current = (await quoteArea.innerText()).trim();
+
+  // Ensure the test was set up correctly; if not, fail with a clear message.
+  expect(prev, "previousQuote must be set by a prior step (e.g. 'a quote is currently displayed')").not.toEqual("");
 
   // Expect change; if your product allows repeats, relax this expectation.
   expect(current).not.toEqual(prev);
