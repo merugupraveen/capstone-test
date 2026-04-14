@@ -11,15 +11,19 @@ import { CustomWorld } from "../../../src/support/world";
 
 const randomQuoteUrl = process.env.RANDOM_QUOTE_URL;
 
-Given("I am on the Random Quote Generator page", async function (this: CustomWorld) {
-  if (!this.page) throw new Error("Playwright page was not initialized for UI scenario.");
+async function navigateToRandomQuoteGeneratorPage(world: CustomWorld): Promise<void> {
+  if (!world.page) throw new Error("Playwright page was not initialized for UI scenario.");
   if (!randomQuoteUrl) {
     throw new Error(
       "RANDOM_QUOTE_URL env var is not set. Provide the AUT/competitor URL to navigate to."
     );
   }
 
-  await this.page.goto(randomQuoteUrl, { waitUntil: "domcontentloaded" });
+  await world.page.goto(randomQuoteUrl, { waitUntil: "domcontentloaded" });
+}
+
+Given("I am on the Random Quote Generator page", async function (this: CustomWorld) {
+  await navigateToRandomQuoteGeneratorPage(this);
 });
 
 When("I trigger the random quote generation action", async function (this: CustomWorld) {
@@ -42,8 +46,12 @@ Then("I should see a quote displayed", async function (this: CustomWorld) {
 });
 
 Given("a quote has been generated", async function (this: CustomWorld) {
-  // Reuse navigation step; actual generation is intentionally left unimplemented due to unknown locator.
-  await (Given as any).prototype?.();
+  // At minimum we can ensure the AUT is loaded. Quote generation control remains unknown.
+  await navigateToRandomQuoteGeneratorPage(this);
+
+  // Placeholder: this would normally call the quote generation action.
+  // Keeping as-is until a stable selector/interaction is confirmed.
+  // Example (once known): await this.page.getByRole("button", { name: /generate/i }).click();
 });
 
 Then("I should see the quote author attribution if available", async function (this: CustomWorld) {
