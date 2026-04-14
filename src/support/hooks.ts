@@ -17,7 +17,9 @@ AfterAll(async () => {
 
 Before({ tags: "@ui" }, async function (this: CustomWorld) {
   this.browser = sharedBrowser;
-  this.context = await this.browser.newContext();
+  this.context = await this.browser.newContext({
+    permissions: ["clipboard-read", "clipboard-write"],
+  });
   this.page = await this.context.newPage();
 });
 
